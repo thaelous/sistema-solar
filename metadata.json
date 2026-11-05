@@ -1,0 +1,6 @@
+{
+  "name": "Simulador Astronómico 3D: Sistema Sol-Tierra-Luna",
+  "description": "Simulador interactivo 3D con física astronómica real del sistema Sol, Tierra y Luna: rotaciones, traslaciones, acoplamiento de marea 1:1 y fases lunares.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

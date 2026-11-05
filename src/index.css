@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+  background-color: #030712;
+  font-family: 'Inter', sans-serif;
+  color: #f8fafc;
+}
+
+#root {
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+}
+
+.font-mono-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+#canvas-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 1;
+  display: block;
+  touch-action: none;
+}
+
+/* Glassmorphism panels */
+.space-panel {
+  background: rgba(10, 15, 29, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown transitions */
+.dropdown-panel {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.dropdown-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* Custom Range Slider */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  background: rgba(51, 65, 85, 0.8);
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px;
+  background-color: #38bdf8;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+  transition: transform 0.15s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background-color: #7dd3fc;
+}
+
+/* 3D Floating Labels */
+.planet-label {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -140%);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e2e8f0;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Custom Scrollbar for side panels on small screens */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.4);
+  border-radius: 4px;
+}
+
+.btn-active {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(37, 99, 235, 0.35)) !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* ========================================================================== */
+/* ESTILOS DE MODO CLARO (ESPACIO BLANCO) */
+/* ========================================================================== */
+.light-mode {
+  color: #0f172a !important;
+}
+
+.light-mode .space-panel {
+  background: rgba(255, 255, 255, 0.90) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.light-mode .planet-label {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid #94a3b8 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.light-mode .text-slate-200,
+.light-mode .text-slate-300,
+.light-mode .text-slate-400 {
+  color: #334155 !important;
+}
+
+.light-mode .text-slate-500,
+.light-mode .text-slate-600 {
+  color: #64748b !important;
+}
+
+.light-mode .bg-slate-900,
+.light-mode .bg-slate-900\/70,
+.light-mode .bg-slate-950,
+.light-mode .bg-slate-950\/80 {
+  background-color: rgba(241, 245, 249, 0.92) !important;
+  color: #0f172a !important;
+}
+
+.light-mode .border-slate-800,
+.light-mode .border-slate-700,
+.light-mode .border-slate-700\/70 {
+  border-color: #cbd5e1 !important;
+}
+
+.light-mode .bg-slate-800 {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.light-mode .bg-slate-800:hover {
+  background-color: #cbd5e1 !important;
+}
+
+/* ========================================================================== */
+/* OPTIMIZACIÓN RESPONSIVA TOTAL PARA CELULAR (<768px) */
+/* ========================================================================== */
+.top-hud-pill1 {
+  background: rgba(10, 15, 29, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+}
+
+.top-hud-pill2 {
+  background: rgba(10, 15, 29, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+}
+
+.light-mode .top-hud-pill1,
+.light-mode .top-hud-pill2 {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+@media (max-width: 768px) {
+  /* PROHIBIDO OCULTAR BOTONES O CONTROLES EN CELULAR */
+  .top-hud-pill1 {
+    width: auto !important;
+    max-width: 96vw !important;
+    padding: 3px 8px !important;
+    gap: 5px !important;
+    display: flex !important;
+  }
+
+  .top-hud-pill2 {
+    width: auto !important;
+    max-width: 96vw !important;
+    padding: 3px 6px !important;
+    gap: 5px !important;
+    display: flex !important;
+  }
+
+  .top-hud-pill2 button {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    display: flex !important;
+  }
+
+  .bottom-dock-bar {
+    bottom: 12px !important;
+    max-width: 96vw !important;
+    gap: 4px !important;
+    padding: 4px 6px !important;
+  }
+
+  .bottom-dock-bar button {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .dropdown-panel.open {
+    width: 92vw !important;
+    max-width: 92vw !important;
+    max-height: 52dvh !important;
+    bottom: 60px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 12px !important;
+    overflow-y: auto !important;
+  }
+}
+

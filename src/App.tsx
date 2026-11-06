@@ -57,6 +57,77 @@ export type CameraMode =
   | 'moon'
   | 'earth_to_moon';
 
+export interface TutorialStepHighlight {
+  icon: string;
+  title: string;
+  text: string;
+}
+
+export interface TutorialStepDef {
+  step: number;
+  title: string;
+  subtitle: string;
+  icon: string;
+  badge: string;
+  description: string;
+  highlights: TutorialStepHighlight[];
+}
+
+export const TUTORIAL_STEPS: TutorialStepDef[] = [
+  {
+    step: 1,
+    title: '¡Bienvenido al Sistema Solar!',
+    subtitle: 'Navegación y Exploración 3D',
+    icon: 'fa-solid fa-globe',
+    badge: 'Paso 1 de 4 • Navegación Espacial',
+    description: 'Explora el espacio en 3D interactivo. Rota con un dedo (o el ratón), haz zoom con el pellizco y descubre la escala real con efemérides calculadas con física orbital Kepleriana J2000.',
+    highlights: [
+      { icon: 'fa-solid fa-arrows-rotate', title: 'Rotar la Vista', text: 'Arrastra con 1 dedo o clic izquierdo para orbitar en 360° alrededor de cualquier astro.' },
+      { icon: 'fa-solid fa-magnifying-glass-plus', title: 'Acercar / Alejar', text: 'Pellizca con 2 dedos en móvil o gira la rueda del ratón en escritorio.' },
+      { icon: 'fa-solid fa-arrows-up-down-left-right', title: 'Desplazar (Pan)', text: 'Desliza con 2 dedos o mantén clic derecho presionado.' }
+    ]
+  },
+  {
+    step: 2,
+    title: 'Barra Superior e Iconos Rápidos',
+    subtitle: 'Control Temporal y Modos Visuales',
+    icon: 'fa-solid fa-sliders',
+    badge: 'Paso 2 de 4 • Top HUD',
+    description: 'Aprende a pausar el tiempo, consultar la fecha exacta, cambiar entre Modo Oscuro y Modo Claro (Espacio Blanco), activar etiquetas, órbitas y el cono de sombras.',
+    highlights: [
+      { icon: 'fa-solid fa-play', title: 'Play / Pausa & Fecha', text: 'Detén o reanuda la simulación; visualiza la fecha y hora UTC tabular exacta.' },
+      { icon: 'fa-solid fa-circle-half-stroke', title: 'Modo Claro / Oscuro', text: 'Alterna entre fondo cósmico oscuro y el Espacio Blanco didáctico.' },
+      { icon: 'fa-solid fa-tags', title: 'Etiquetas & Órbitas', text: 'Enciende o apaga nombres, órbitas elípticas, audio y realce lumínico.' }
+    ]
+  },
+  {
+    step: 3,
+    title: 'Menús Desplegables (Dock)',
+    subtitle: 'Tiempo, Cámaras y Capas',
+    icon: 'fa-solid fa-layer-group',
+    badge: 'Paso 3 de 4 • Dock Inferior',
+    description: 'Descubre cómo viajar en el tiempo a velocidad acelerada, saltar a eclipses y enfocar instantáneamente cualquier planeta o la Luna desde el dock inferior.',
+    highlights: [
+      { icon: 'fa-solid fa-clock', title: '⏱️ Tiempo & Eclipses', text: 'Acelera desde 1x hasta 100,000x y salta a eclipses históricos o calendarios J2000.' },
+      { icon: 'fa-solid fa-video', title: '🎥 Cámaras Orbitales', text: 'Enfoca automáticamente el Sol, planetas, lunas o asteroides con vuelo suave.' },
+      { icon: 'fa-solid fa-layer-group', title: '✨ Capas Visuales', text: 'Satélites artificiales LEO/GEO, cinturón de asteroides y conos de sombra.' }
+    ]
+  },
+  {
+    step: 4,
+    title: 'El Telescopio PiP y el Inspector',
+    subtitle: 'Ficha Científica y Observación Lunar HD',
+    icon: 'fa-solid fa-telescope',
+    badge: 'Paso 4 de 4 • Telescopio e Inspector',
+    description: 'Haz clic en cualquier planeta para abrir su ficha técnica científica, lunas y botón de vuelo. Toca el visor PiP para maximizarlo a pantalla completa y ver los cráteres en alta definición.',
+    highlights: [
+      { icon: 'fa-solid fa-circle-info', title: 'Inspector Planetario', text: 'Toca cualquier planeta para ver distancia, velocidad y conteo real de lunas.' },
+      { icon: 'fa-solid fa-eye', title: 'Telescopio PiP (Luna)', text: 'Observa la fase lunar en tiempo real y haz clic para maximizarlo a HD.' },
+      { icon: 'fa-solid fa-crosshairs', title: 'Auto-Enfocar Astro', text: 'Pulsa el botón de enfoque para viajar suavemente al astro seleccionado.' }
+    ]
+  }
+];
+
 export const J2000_EPOCH = Date.UTC(2000, 0, 1, 12, 0, 0);
 
 export interface MoonDef {
@@ -855,6 +926,184 @@ export default function App() {
   const [customLon, setCustomLon] = useState<number>(-99.1332);
   const [gpsLoading, setGpsLoading] = useState<boolean>(false);
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
+
+  // Pantalla de Bienvenida Cinematográfica (Splash Screen de 3 segundos)
+  const [showSplashScreen, setShowSplashScreen] = useState<boolean>(true);
+  const [splashFade, setSplashFade] = useState<boolean>(false);
+  const splashCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Tutorial Dinámico Interactivo (Onboarding Walkthrough Tour)
+  const [showTutorial, setShowTutorial] = useState<boolean>(false);
+  const [tutorialStep, setTutorialStep] = useState<number>(0);
+  const [dontShowTutorialAgain, setDontShowTutorialAgain] = useState<boolean>(false);
+
+  const handleCloseTutorial = (fromFinishButton = false) => {
+    if (fromFinishButton && dontShowTutorialAgain) {
+      try {
+        localStorage.setItem('solar3d_skip_tutorial', 'true');
+      } catch {
+        // Ignorar en caso de restricciones de almacenamiento
+      }
+    }
+    setShowTutorial(false);
+    setTutorialStep(0);
+    audioEngine.playChime('click');
+  };
+
+  useEffect(() => {
+    // Temporizador de 3000ms antes de desvanecer suavemente (0.8s)
+    const fadeTimer = setTimeout(() => {
+      setSplashFade(true);
+    }, 3000);
+
+    const removeTimer = setTimeout(() => {
+      setShowSplashScreen(false);
+      try {
+        const skip = localStorage.getItem('solar3d_skip_tutorial') === 'true';
+        if (!skip) {
+          setShowTutorial(true);
+          setTutorialStep(0);
+        }
+      } catch {
+        setShowTutorial(true);
+      }
+    }, 3800);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
+  // Animación del campo de partículas estelares y siluetas planetarias en el Splash Screen
+  useEffect(() => {
+    if (!showSplashScreen || !splashCanvasRef.current) return;
+    const canvas = splashCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Generar partículas cósmicas
+    const particleCount = 130;
+    const particles = Array.from({ length: particleCount }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      baseX: Math.random() * width,
+      baseY: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.45,
+      vy: (Math.random() - 0.5) * 0.45,
+      size: Math.random() * 2.2 + 0.6,
+      alpha: Math.random() * 0.7 + 0.3,
+      glow: Math.random() * 8 + 3,
+      color: Math.random() > 0.35 ? '#ffffff' : Math.random() > 0.5 ? '#38bdf8' : '#fbbf24',
+      phase: Math.random() * Math.PI * 2,
+      orbitSpeed: (Math.random() - 0.5) * 0.02,
+      orbitRadius: Math.random() * 60 + 20,
+    }));
+
+    // Siluetas planetarias místicas (mini Saturno y orbes celestes flotantes)
+    const planets = [
+      { x: width * 0.22, y: height * 0.32, radius: 18, ringR1: 26, ringR2: 42, angle: -0.32, color: '#38bdf8', opacity: 0.22 },
+      { x: width * 0.78, y: height * 0.68, radius: 24, ringR1: 34, ringR2: 56, angle: 0.45, color: '#f59e0b', opacity: 0.25 },
+      { x: width * 0.75, y: height * 0.28, radius: 12, ringR1: 0, ringR2: 0, angle: 0, color: '#60a5fa', opacity: 0.28 },
+      { x: width * 0.25, y: height * 0.72, radius: 14, ringR1: 0, ringR2: 0, angle: 0, color: '#ec4899', opacity: 0.20 },
+    ];
+
+    let t = 0;
+    const render = () => {
+      t += 0.016;
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width, height);
+
+      // Dibujar siluetas cósmicas con anillos translúcidos (estilo planetario elegante)
+      planets.forEach((p, idx) => {
+        const floatY = p.y + Math.sin(t * 1.2 + idx) * 8;
+        const floatX = p.x + Math.cos(t * 0.8 + idx) * 6;
+
+        // Resplandor del planeta
+        const grad = ctx.createRadialGradient(floatX, floatY, 2, floatX, floatY, p.radius * 2.2);
+        grad.addColorStop(0, p.color);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(floatX, floatY, p.radius * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Esfera planetaria
+        ctx.fillStyle = '#050b1a';
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(floatX, floatY, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Anillos si los tiene (tipo Saturno elegante)
+        if (p.ringR2 > 0) {
+          ctx.save();
+          ctx.translate(floatX, floatY);
+          ctx.rotate(p.angle);
+          ctx.scale(1, 0.32);
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.arc(0, 0, p.ringR2, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.arc(0, 0, p.ringR1, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+
+      // Dibujar partículas cósmicas flotantes
+      particles.forEach((pt) => {
+        pt.phase += pt.orbitSpeed;
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+
+        if (pt.x < 0) pt.x = width;
+        if (pt.x > width) pt.x = 0;
+        if (pt.y < 0) pt.y = height;
+        if (pt.y > height) pt.y = 0;
+
+        const pulse = (Math.sin(t * 2.5 + pt.phase) + 1) * 0.5;
+        const currentAlpha = pt.alpha * (0.6 + pulse * 0.4);
+
+        ctx.shadowBlur = pt.glow;
+        ctx.shadowColor = pt.color;
+        ctx.fillStyle = pt.color;
+        ctx.globalAlpha = currentAlpha;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [showSplashScreen]);
 
   // Capas Visuales 3D (Estado inicial 100% limpio por defecto)
   const [showLabels, setShowLabels] = useState<boolean>(false);
@@ -2212,15 +2461,46 @@ export default function App() {
     audioEngine.playChime('click');
   };
 
-  const handleDownloadStandaloneHtml = () => {
-    window.open('/simulador_sistema_solar_3d.html', '_blank');
-  };
-
   return (
     <div className={`relative flex flex-col h-screen w-screen overflow-hidden select-none font-sans ${isLightMode ? 'light-mode bg-slate-100 text-slate-900' : 'bg-[#030712] text-slate-100'}`}>
       {/* ==================================================================== */}
-      {/* 1. HUD FLOTANTE SUPERIOR ("PÍLDORA INTELIGENTE" APPLE DESIGN) 100% FIJO */}
+      {/* 0. PANTALLA DE BIENVENIDA ("SPLASH SCREEN") CINEMATOGRÁFICA 3 SEGUNDOS */}
       {/* ==================================================================== */}
+      {showSplashScreen && (
+        <div
+          className={`fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black transition-opacity duration-800 pointer-events-none select-none ${
+            splashFade ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ transitionDuration: '800ms' }}
+        >
+          {/* Canvas de Partículas Estelares y Siluetas Planetarias */}
+          <canvas ref={splashCanvasRef} className="absolute inset-0 w-full h-full block" />
+
+          {/* Textos Cinematográficos Centrados */}
+          <div className="relative z-10 flex flex-col items-center text-center px-4 max-w-xl animate-fade-in">
+            {/* Pequeño isotipo o anillo cósmico */}
+            <div className="w-16 h-16 mb-4 rounded-full border border-sky-400/40 bg-sky-500/10 flex items-center justify-center shadow-[0_0_30px_rgba(56,189,248,0.35)]">
+              <span className="text-3xl select-none filter drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]">🪐</span>
+            </div>
+
+            {/* Título Principal */}
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight sm:tracking-wide font-sans mb-3 text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 drop-shadow-[0_0_25px_rgba(255,255,255,0.45)]">
+              El sistema solar
+            </h1>
+
+            {/* Subtítulo */}
+            <p className="text-sm sm:text-base md:text-lg font-medium text-slate-400 tracking-wider font-mono-num uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              por <span className="text-slate-200 font-semibold tracking-normal normal-case">Robert Pacheco</span>
+            </p>
+
+            {/* Barra de progreso de carga sutil de 3 segundos */}
+            <div className="w-48 sm:w-64 h-0.5 bg-slate-800 rounded-full mt-8 overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-sky-400 to-amber-300 w-full origin-left animate-[scaleX_3s_ease-out_forwards]" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ==================================================================== */}
       {/* 1. HUD FLOTANTE SUPERIOR ("DOBLE PÍLDORA INTELIGENTE" APPLE-STYLE) */}
       {/* ==================================================================== */}
@@ -2443,12 +2723,13 @@ export default function App() {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'menu-time' ? null : 'menu-time')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium space-panel border transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
               openDropdown === 'menu-time' ? 'btn-active' : 'border-slate-800 text-slate-200'
             }`}
+            title="Efemérides, tiempo y velocidad"
           >
             <i className="fa-solid fa-clock text-sky-400"></i>
-            <span className="hidden sm:inline">Tiempo</span>
+            <span className="hidden min-[380px]:inline">Tiempo</span>
           </button>
 
           {openDropdown === 'menu-time' && (
@@ -2717,12 +2998,13 @@ export default function App() {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'menu-cameras' ? null : 'menu-cameras')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium space-panel border transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
               openDropdown === 'menu-cameras' ? 'btn-active' : 'border-slate-800 text-slate-200'
             }`}
+            title="Cámaras de seguimiento y observación"
           >
             <i className="fa-solid fa-video text-amber-400"></i>
-            <span className="hidden sm:inline">Cámaras</span>
+            <span className="hidden min-[380px]:inline">Cámaras</span>
           </button>
 
           {openDropdown === 'menu-cameras' && (
@@ -2862,12 +3144,13 @@ export default function App() {
         <div className="relative">
           <button
             onClick={() => setOpenDropdown(openDropdown === 'menu-layers' ? null : 'menu-layers')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium space-panel border transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
               openDropdown === 'menu-layers' ? 'btn-active' : 'border-slate-800 text-slate-200'
             }`}
+            title="Capas y elementos visuales 3D"
           >
             <i className="fa-solid fa-layer-group text-indigo-400"></i>
-            <span className="hidden sm:inline">Capas</span>
+            <span className="hidden min-[380px]:inline">Capas</span>
           </button>
 
           {openDropdown === 'menu-layers' && (
@@ -3030,13 +3313,34 @@ export default function App() {
                   />
                 </label>
 
-                {/* Botón de exportación autocontenida */}
+                {/* Botón PWA: Instalar App en Android */}
                 <button
-                  onClick={handleDownloadStandaloneHtml}
-                  className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 cursor-pointer"
+                  onClick={() => {
+                    const promptEvent = (window as unknown as { deferredInstallPrompt?: { prompt: () => void; userChoice: Promise<{ outcome: string }> } }).deferredInstallPrompt;
+                    if (promptEvent) {
+                      promptEvent.prompt();
+                    } else {
+                      alert('Para instalar en Android:\nToca el menú de tres puntos (⋮) de Chrome y selecciona "Agregar a la pantalla principal" o "Instalar aplicación".');
+                    }
+                  }}
+                  className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
-                  <i className="fa-solid fa-download"></i>
-                  <span>Descargar HTML Autocontenido</span>
+                  <i className="fa-solid fa-mobile-screen-button"></i>
+                  <span>📲 Instalar App (Android / PWA)</span>
+                </button>
+
+                {/* Botón para volver a ver el tutorial interactivo */}
+                <button
+                  onClick={() => {
+                    setShowTutorial(true);
+                    setTutorialStep(0);
+                    setOpenDropdown(null);
+                    audioEngine.playChime('click');
+                  }}
+                  className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 cursor-pointer"
+                >
+                  <i className="fa-solid fa-graduation-cap text-sky-200"></i>
+                  <span>✨ Ver Tutorial / Guía Rápida</span>
                 </button>
               </div>
             </div>
@@ -3898,6 +4202,156 @@ export default function App() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ==================================================================== */}
+        {/* MODAL DEL TUTORIAL INTERACTIVO (ONBOARDING WALKTHROUGH TOUR) */}
+        {/* ==================================================================== */}
+        {showTutorial && (
+          <div
+            className="fixed inset-0 z-[150] flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                handleCloseTutorial(false);
+              }
+            }}
+          >
+            <div
+              className="relative w-full max-w-xl space-panel rounded-3xl border border-sky-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] p-5 sm:p-7 overflow-hidden text-slate-100 flex flex-col gap-4 sm:gap-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Cabecera del Tour con Progreso y Saltar */}
+              <div className="flex items-center justify-between border-b border-slate-700/70 pb-3 gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-mono-num font-semibold">
+                    Paso {tutorialStep + 1} de {TUTORIAL_STEPS.length}
+                  </span>
+                  {/* Barras de progreso segmentadas */}
+                  <div className="flex items-center gap-1.5">
+                    {TUTORIAL_STEPS.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setTutorialStep(idx);
+                          audioEngine.playChime('click');
+                        }}
+                        className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                          idx === tutorialStep
+                            ? 'w-7 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)]'
+                            : idx < tutorialStep
+                            ? 'w-3 bg-sky-600'
+                            : 'w-2 bg-slate-700/80'
+                        }`}
+                        title={`Ir al paso ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleCloseTutorial(false)}
+                  className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                  title="Cerrar y saltar tutorial"
+                >
+                  <span>Saltar</span>
+                  <i className="fa-solid fa-xmark text-xs"></i>
+                </button>
+              </div>
+
+              {/* Contenido Dinámico del Paso Actual */}
+              <div className="flex flex-col gap-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500/25 to-indigo-600/30 border border-sky-400/40 flex items-center justify-center text-sky-300 text-xl shadow-lg shadow-sky-500/20 shrink-0">
+                    <i className={TUTORIAL_STEPS[tutorialStep].icon}></i>
+                  </div>
+                  <div>
+                    <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-sky-400">
+                      {TUTORIAL_STEPS[tutorialStep].subtitle}
+                    </div>
+                    <h2 className="text-base sm:text-xl font-bold text-white tracking-tight">
+                      {TUTORIAL_STEPS[tutorialStep].title}
+                    </h2>
+                  </div>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  {TUTORIAL_STEPS[tutorialStep].description}
+                </p>
+
+                {/* Tarjetas destacadas / Resumen visual */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                  {TUTORIAL_STEPS[tutorialStep].highlights.map((h, idx) => (
+                    <div
+                      key={idx}
+                      className="p-2.5 sm:p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-sky-500/30 transition flex flex-col gap-1"
+                    >
+                      <div className="flex items-center gap-1.5 text-sky-400 text-xs font-semibold">
+                        <i className={h.icon}></i>
+                        <span className="text-white text-xs font-bold">{h.title}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-normal">{h.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Casilla "No volver a mostrar" en el último paso */}
+              {tutorialStep === TUTORIAL_STEPS.length - 1 && (
+                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-sky-500/20 flex items-center justify-between">
+                  <label className="flex items-center gap-2.5 text-xs text-slate-200 hover:text-white cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={dontShowTutorialAgain}
+                      onChange={(e) => setDontShowTutorialAgain(e.target.checked)}
+                      className="w-4 h-4 rounded accent-sky-400 cursor-pointer"
+                    />
+                    <span className="font-medium">No volver a mostrar este tutorial al iniciar</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Botones de Navegación */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                {tutorialStep > 0 ? (
+                  <button
+                    onClick={() => {
+                      setTutorialStep(tutorialStep - 1);
+                      audioEngine.playChime('click');
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold border border-slate-700/80 flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <i className="fa-solid fa-arrow-left text-[11px]"></i>
+                    <span>Anterior</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+
+                <div className="flex items-center gap-2">
+                  {tutorialStep < TUTORIAL_STEPS.length - 1 ? (
+                    <button
+                      onClick={() => {
+                        setTutorialStep(tutorialStep + 1);
+                        audioEngine.playChime('click');
+                      }}
+                      className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition active:scale-95 cursor-pointer"
+                    >
+                      <span>Siguiente</span>
+                      <i className="fa-solid fa-arrow-right text-[11px]"></i>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleCloseTutorial(true)}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-300 hover:to-indigo-400 text-slate-950 font-bold text-xs shadow-lg shadow-sky-500/30 flex items-center gap-2 transition active:scale-95 cursor-pointer"
+                    >
+                      <span>¡Comenzar a explorar!</span>
+                      <i className="fa-solid fa-rocket text-xs"></i>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>

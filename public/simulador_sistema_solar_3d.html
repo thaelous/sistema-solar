@@ -128,6 +128,35 @@
 </head>
 <body class="flex flex-col h-screen w-screen overflow-hidden select-none bg-[#020617]">
 
+    <!-- 0. PANTALLA DE BIENVENIDA ("SPLASH SCREEN") CINEMATOGRÁFICA 3 SEGUNDOS -->
+    <div id="splash-screen" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black transition-opacity duration-800 select-none" style="transition-duration: 800ms;">
+        <!-- Canvas de Partículas Estelares y Siluetas Planetarias -->
+        <canvas id="splash-canvas" class="absolute inset-0 w-full h-full block"></canvas>
+
+        <!-- Textos Cinematográficos Centrados -->
+        <div class="relative z-10 flex flex-col items-center text-center px-4 max-w-xl">
+            <!-- Anillo cósmico / Isotipo -->
+            <div class="w-16 h-16 mb-4 rounded-full border border-sky-400/40 bg-sky-500/10 flex items-center justify-center shadow-[0_0_30px_rgba(56,189,248,0.35)]">
+                <span class="text-3xl select-none filter drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]">🪐</span>
+            </div>
+
+            <!-- Título Principal -->
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight sm:tracking-wide font-sans mb-3 text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 drop-shadow-[0_0_25px_rgba(255,255,255,0.45)]">
+                El sistema solar
+            </h1>
+
+            <!-- Subtítulo -->
+            <p class="text-sm sm:text-base md:text-lg font-medium text-slate-400 tracking-wider font-mono-num uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                por <span class="text-slate-200 font-semibold tracking-normal normal-case">Robert Pacheco</span>
+            </p>
+
+            <!-- Barra de progreso cósmica de 3 segundos -->
+            <div class="w-48 sm:w-64 h-0.5 bg-slate-800 rounded-full mt-8 overflow-hidden">
+                <div id="splash-progress-bar" class="h-full bg-gradient-to-r from-sky-400 to-amber-300 w-0 transition-all duration-[3000ms] ease-out"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- 1. PÍLDORA INTELIGENTE SUPERIOR (DOBLE PÍLDORA APPLE-STYLE) -->
     <header id="top-hud" class="fixed top-2 sm:top-3 left-1/2 -translate-x-1/2 z-40 transition-all duration-300 w-[96vw] max-w-[96vw] flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-none">
         <!-- PÍLDORA 1: ESTADO ASTRONÓMICO COMPACTO CON ICONOS -->
@@ -214,11 +243,11 @@
     </button>
 
     <!-- 2. DOCK INFERIOR CENTRADO (MENÚS DESPLEGABLES CON EXCLUSIÓN MUTUA) -->
-    <nav id="dropdown-triggers" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2.5 px-3 py-1.5 rounded-2xl space-panel border border-sky-500/30 shadow-[0_16px_45px_rgba(0,0,0,0.85)]">
+    <nav id="dropdown-triggers" class="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3 py-1.5 rounded-2xl space-panel border border-sky-500/30 shadow-[0_16px_45px_rgba(0,0,0,0.85)] max-w-[96vw]">
         <!-- Tiempo -->
         <div class="relative">
-            <button data-dropdown="menu-time" class="dropdown-btn px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-clock text-sky-400"></i><span class="hidden sm:inline">Tiempo</span>
+            <button data-dropdown="menu-time" class="dropdown-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Efemérides y Tiempo">
+                <i class="fa-solid fa-clock text-sky-400"></i><span class="hidden min-[380px]:inline">Tiempo</span>
             </button>
             <div id="menu-time" class="dropdown-panel absolute bottom-full mb-3 left-0 sm:left-1/2 sm:-translate-x-1/2 w-84 sm:w-96 space-panel rounded-2xl p-4 z-50 max-h-[72vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-slate-700/70 pb-2 mb-3">
@@ -334,8 +363,8 @@
 
         <!-- Cámaras y GPS -->
         <div class="relative">
-            <button data-dropdown="menu-cameras" class="dropdown-btn px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-video text-amber-400"></i><span class="hidden sm:inline">Cámaras</span>
+            <button data-dropdown="menu-cameras" class="dropdown-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Cámaras de seguimiento">
+                <i class="fa-solid fa-video text-amber-400"></i><span class="hidden min-[380px]:inline">Cámaras</span>
             </button>
             <div id="menu-cameras" class="dropdown-panel absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-84 space-panel rounded-2xl p-4 z-50 max-h-[72vh] overflow-y-auto">
                 <div class="text-xs font-bold uppercase tracking-wider text-amber-400 border-b border-slate-700/70 pb-2 mb-2.5">
@@ -394,8 +423,8 @@
 
         <!-- Capas -->
         <div class="relative">
-            <button data-dropdown="menu-layers" class="dropdown-btn px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-layer-group text-indigo-400"></i><span class="hidden sm:inline">Capas</span>
+            <button data-dropdown="menu-layers" class="dropdown-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Capas visuales 3D">
+                <i class="fa-solid fa-layer-group text-indigo-400"></i><span class="hidden min-[380px]:inline">Capas</span>
             </button>
             <div id="menu-layers" class="dropdown-panel max-md:fixed max-md:bottom-[68px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-h-[55vh] max-md:overflow-y-auto max-md:rounded-2xl max-md:p-3 max-md:z-50 md:absolute md:bottom-full md:mb-3 md:right-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-72 space-panel md:rounded-2xl md:p-3 z-50 text-xs">
                 <div class="text-xs font-bold uppercase tracking-wider text-indigo-300 border-b border-slate-700/70 pb-2 mb-2 flex items-center justify-between">
@@ -425,6 +454,18 @@
                     <label class="flex justify-between cursor-pointer"><span>Pin GPS (CDMX)</span><input type="checkbox" id="chk-pin" checked class="accent-rose-400"></label>
                     <label class="flex justify-between cursor-pointer hover:text-cyan-300"><span>Satélites Artificiales</span><input type="checkbox" id="chk-satellites" class="accent-cyan-400"></label>
                     <label class="flex justify-between cursor-pointer"><span>Telescopio PiP (Luna)</span><input type="checkbox" id="chk-pip" class="accent-sky-400"></label>
+                    
+                    <!-- Botón PWA: Instalar App en Android -->
+                    <button id="btn-install-pwa" class="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <span>📲 Instalar App (Android / PWA)</span>
+                    </button>
+
+                    <!-- Botón para volver a ver el tutorial interactivo -->
+                    <button id="btn-show-tutorial" class="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 cursor-pointer">
+                        <i class="fa-solid fa-graduation-cap text-sky-200"></i>
+                        <span>✨ Ver Tutorial / Guía Rápida</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -684,6 +725,83 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+    <!-- 7. MODAL DEL TUTORIAL INTERACTIVO (ONBOARDING WALKTHROUGH TOUR) -->
+    <div id="tutorial-modal" class="hidden fixed inset-0 z-[150] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-xl space-panel rounded-3xl border border-sky-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] p-5 sm:p-7 overflow-hidden text-slate-100 flex flex-col gap-4 sm:gap-5" onclick="event.stopPropagation()">
+            <!-- Cabecera del Tour con Progreso y Saltar -->
+            <div class="flex items-center justify-between border-b border-slate-700/70 pb-3 gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <span id="tour-badge-step" class="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-mono-num font-semibold">
+                        Paso 1 de 4
+                    </span>
+                    <!-- Indicadores de progreso -->
+                    <div id="tour-step-dots" class="flex items-center gap-1.5">
+                        <button class="tour-dot h-1.5 rounded-full w-7 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)] cursor-pointer" data-step="0"></button>
+                        <button class="tour-dot h-1.5 rounded-full w-2 bg-slate-700/80 cursor-pointer" data-step="1"></button>
+                        <button class="tour-dot h-1.5 rounded-full w-2 bg-slate-700/80 cursor-pointer" data-step="2"></button>
+                        <button class="tour-dot h-1.5 rounded-full w-2 bg-slate-700/80 cursor-pointer" data-step="3"></button>
+                    </div>
+                </div>
+
+                <button id="btn-skip-tour" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Cerrar y saltar tutorial">
+                    <span>Saltar</span>
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Contenido Dinámico del Paso Actual -->
+            <div class="flex flex-col gap-3.5">
+                <div class="flex items-center gap-3">
+                    <div id="tour-icon-box" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500/25 to-indigo-600/30 border border-sky-400/40 flex items-center justify-center text-sky-300 text-xl shadow-lg shadow-sky-500/20 shrink-0">
+                        <i id="tour-icon" class="fa-solid fa-globe"></i>
+                    </div>
+                    <div>
+                        <div id="tour-subtitle" class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-sky-400">
+                            Navegación y Exploración 3D
+                        </div>
+                        <h2 id="tour-title" class="text-base sm:text-xl font-bold text-white tracking-tight">
+                            ¡Bienvenido al Sistema Solar!
+                        </h2>
+                    </div>
+                </div>
+
+                <p id="tour-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    Explora el espacio en 3D interactivo. Rota con un dedo (o el ratón), haz zoom con el pellizco y descubre la escala real con efemérides calculadas con física orbital Kepleriana J2000.
+                </p>
+
+                <!-- Tarjetas destacadas / Resumen visual -->
+                <div id="tour-highlights-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                    <!-- Rellenado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Casilla "No volver a mostrar" en el último paso -->
+            <div id="tour-checkbox-container" class="hidden p-2.5 rounded-xl bg-slate-900/80 border border-sky-500/20 flex items-center justify-between">
+                <label class="flex items-center gap-2.5 text-xs text-slate-200 hover:text-white cursor-pointer select-none">
+                    <input type="checkbox" id="chk-dont-show-tour" class="w-4 h-4 rounded accent-sky-400 cursor-pointer">
+                    <span class="font-medium">No volver a mostrar este tutorial al iniciar</span>
+                </label>
+            </div>
+
+            <!-- Botones de Navegación -->
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <button id="btn-tour-prev" class="hidden px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold border border-slate-700/80 flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                    <span>Anterior</span>
+                </button>
+                <div id="tour-prev-spacer" class="w-1"></div>
+
+                <div class="flex items-center gap-2">
+                    <button id="btn-tour-next" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition active:scale-95 cursor-pointer">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                    </button>
+                    <button id="btn-tour-finish" class="hidden px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-300 hover:to-indigo-400 text-slate-950 font-bold text-xs shadow-lg shadow-sky-500/30 flex items-center gap-2 transition active:scale-95 cursor-pointer">
+                        <span>¡Comenzar a explorar!</span>
+                        <i class="fa-solid fa-rocket text-xs"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1963,9 +2081,354 @@
         }
 
         // ============================================================================
+        // PANTALLA DE BIENVENIDA (SPLASH SCREEN CINEMATOGRÁFICA)
+        // ============================================================================
+        function initSplashScreen() {
+            const splashEl = document.getElementById('splash-screen');
+            if (!splashEl) return;
+            const canvas = document.getElementById('splash-canvas');
+            const pBar = document.getElementById('splash-progress-bar');
+
+            // Barra de progreso animada durante los 3 segundos
+            if (pBar) {
+                setTimeout(() => {
+                    pBar.style.width = '100%';
+                }, 50);
+            }
+
+            // Partículas y siluetas planetarias cósmicas en 2D Canvas
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = window.innerWidth;
+                let height = canvas.height = window.innerHeight;
+
+                const onResize = () => {
+                    if (!canvas) return;
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                };
+                window.addEventListener('resize', onResize);
+
+                // Sistema de partículas con estrellas y siluetas
+                const particles = [];
+                const numParticles = 110;
+                for (let i = 0; i < numParticles; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4,
+                        radius: Math.random() * 2.2 + 0.6,
+                        color: ['#38bdf8', '#818cf8', '#f59e0b', '#e2e8f0', '#c084fc'][Math.floor(Math.random() * 5)],
+                        alpha: Math.random() * 0.8 + 0.2,
+                        pulse: Math.random() * Math.PI * 2,
+                        pulseSpeed: 0.02 + Math.random() * 0.03,
+                        isSaturn: i % 16 === 0
+                    });
+                }
+
+                const renderSplash = () => {
+                    if (!splashEl || splashEl.style.display === 'none') {
+                        window.removeEventListener('resize', onResize);
+                        return;
+                    }
+                    ctx.clearRect(0, 0, width, height);
+
+                    const time = Date.now() * 0.001;
+
+                    // Silueta 1: Mini Saturno con anillos cósmicos
+                    const cx1 = width * 0.28 + Math.sin(time * 0.3) * 15;
+                    const cy1 = height * 0.35 + Math.cos(time * 0.2) * 15;
+                    ctx.save();
+                    ctx.translate(cx1, cy1);
+                    ctx.rotate(0.35);
+                    // Anillo exterior
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 38, 11, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                    // Globo planetario
+                    const g1 = ctx.createRadialGradient(-3, -3, 2, 0, 0, 15);
+                    g1.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+                    g1.addColorStop(1, 'rgba(15, 23, 42, 0.2)');
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+                    ctx.fillStyle = g1;
+                    ctx.fill();
+                    // Anillo frontal
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 38, 11, 0, 0, Math.PI);
+                    ctx.strokeStyle = 'rgba(129, 140, 248, 0.35)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Silueta 2: Orbe planetario brillante (halo)
+                    const cx2 = width * 0.74 + Math.cos(time * 0.25) * 16;
+                    const cy2 = height * 0.62 + Math.sin(time * 0.3) * 16;
+                    ctx.save();
+                    ctx.translate(cx2, cy2);
+                    const g2 = ctx.createRadialGradient(-4, -4, 3, 0, 0, 24);
+                    g2.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
+                    g2.addColorStop(0.65, 'rgba(245, 158, 11, 0.1)');
+                    g2.addColorStop(1, 'transparent');
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 24, 0, Math.PI * 2);
+                    ctx.fillStyle = g2;
+                    ctx.fill();
+                    ctx.restore();
+
+                    // Dibujar partículas
+                    particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.pulse += p.pulseSpeed;
+
+                        if (p.x < 0) p.x = width;
+                        if (p.x > width) p.x = 0;
+                        if (p.y < 0) p.y = height;
+                        if (p.y > height) p.y = 0;
+
+                        const currentAlpha = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+
+                        ctx.save();
+                        ctx.globalAlpha = Math.max(0.05, currentAlpha);
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        if (p.isSaturn) {
+                            ctx.strokeStyle = p.color;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.ellipse(p.x, p.y, p.radius * 3.2, p.radius * 1.2, 0.4, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                        ctx.restore();
+                    });
+
+                    requestAnimationFrame(renderSplash);
+                };
+                renderSplash();
+            }
+
+            // Temporizador de 3 segundos exactos (3000ms) + 800ms de desvanecimiento
+            setTimeout(() => {
+                if (splashEl) {
+                    splashEl.style.opacity = '0';
+                }
+            }, 3000);
+
+            setTimeout(() => {
+                if (splashEl) {
+                    splashEl.style.display = 'none';
+                }
+                // Comprobar si el usuario ya omitió el tutorial en visitas previas
+                try {
+                    const skip = localStorage.getItem('solar3d_skip_tutorial') === 'true';
+                    if (!skip) {
+                        openTutorial();
+                    }
+                } catch (e) {
+                    openTutorial();
+                }
+            }, 3800);
+        }
+
+        // ============================================================================
+        // TUTORIAL DINÁMICO E INTERACTIVO (ONBOARDING WALKTHROUGH TOUR)
+        // ============================================================================
+        const TUTORIAL_STEPS_DATA = [
+            {
+                step: 1,
+                title: '¡Bienvenido al Sistema Solar!',
+                subtitle: 'Navegación y Exploración 3D',
+                icon: 'fa-solid fa-globe',
+                badge: 'Paso 1 de 4 • Navegación Espacial',
+                description: 'Explora el espacio en 3D interactivo. Rota con un dedo (o el ratón), haz zoom con el pellizco y descubre la escala real con efemérides calculadas con física orbital Kepleriana J2000.',
+                highlights: [
+                    { icon: 'fa-solid fa-arrows-rotate', title: 'Rotar la Vista', text: 'Arrastra con 1 dedo o clic izquierdo para orbitar en 360°' },
+                    { icon: 'fa-solid fa-magnifying-glass-plus', title: 'Acercar / Alejar', text: 'Pellizca con 2 dedos o usa la rueda del ratón' },
+                    { icon: 'fa-solid fa-arrows-up-down-left-right', title: 'Desplazar (Pan)', text: 'Desliza con 2 dedos o mantén clic derecho' }
+                ]
+            },
+            {
+                step: 2,
+                title: 'Barra Superior e Iconos Rápidos',
+                subtitle: 'Control Temporal y Modos Visuales',
+                icon: 'fa-solid fa-sliders',
+                badge: 'Paso 2 de 4 • Top HUD',
+                description: 'Aprende a pausar el tiempo, consultar la fecha exacta, cambiar entre Modo Oscuro y Modo Claro (Espacio Blanco), activar etiquetas, órbitas y el cono de sombras.',
+                highlights: [
+                    { icon: 'fa-solid fa-play', title: 'Play / Pausa & Fecha', text: 'Detén o reanuda la simulación con la fecha y hora UTC exacta' },
+                    { icon: 'fa-solid fa-circle-half-stroke', title: 'Modo Claro / Oscuro', text: 'Alterna entre el fondo cósmico oscuro y el Espacio Blanco' },
+                    { icon: 'fa-solid fa-tags', title: 'Etiquetas & Órbitas', text: 'Enciende o apaga nombres, órbitas elípticas y realce de luz' }
+                ]
+            },
+            {
+                step: 3,
+                title: 'Menús Desplegables (Dock)',
+                subtitle: 'Tiempo, Cámaras y Capas',
+                icon: 'fa-solid fa-layer-group',
+                badge: 'Paso 3 de 4 • Dock Inferior',
+                description: 'Descubre cómo viajar en el tiempo a velocidad acelerada, saltar a eclipses y enfocar instantáneamente cualquier planeta o la Luna desde el dock inferior.',
+                highlights: [
+                    { icon: 'fa-solid fa-clock', title: '⏱️ Tiempo & Eclipses', text: 'Acelera desde 1x hasta 100,000x y salta a eclipses históricos' },
+                    { icon: 'fa-solid fa-video', title: '🎥 Cámaras Orbitales', text: 'Enfoca automáticamente el Sol, planetas, lunas o asteroides' },
+                    { icon: 'fa-solid fa-layer-group', title: '✨ Capas Visuales', text: 'Satélites artificiales LEO/GEO, asteroides y conos de sombra' }
+                ]
+            },
+            {
+                step: 4,
+                title: 'El Telescopio PiP y el Inspector',
+                subtitle: 'Ficha Científica y Observación Lunar HD',
+                icon: 'fa-solid fa-telescope',
+                badge: 'Paso 4 de 4 • Telescopio e Inspector',
+                description: 'Haz clic en cualquier planeta para abrir su ficha técnica científica, lunas y botón de vuelo. Toca el visor PiP para maximizarlo a pantalla completa y ver los cráteres en alta definición.',
+                highlights: [
+                    { icon: 'fa-solid fa-circle-info', title: 'Inspector Planetario', text: 'Toca cualquier planeta para ver distancia, velocidad y sus lunas' },
+                    { icon: 'fa-solid fa-eye', title: 'Telescopio PiP (Luna)', text: 'Observa la fase lunar en tiempo real y maximízalo a HD' },
+                    { icon: 'fa-solid fa-crosshairs', title: 'Auto-Enfocar Astro', text: 'Pulsa el botón de enfoque para viajar suavemente al astro' }
+                ]
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        function renderTutorialStep(stepIndex) {
+            currentTourStep = Math.max(0, Math.min(stepIndex, TUTORIAL_STEPS_DATA.length - 1));
+            const stepData = TUTORIAL_STEPS_DATA[currentTourStep];
+            if (!stepData) return;
+
+            const badge = document.getElementById('tour-badge-step');
+            const icon = document.getElementById('tour-icon');
+            const subtitle = document.getElementById('tour-subtitle');
+            const title = document.getElementById('tour-title');
+            const desc = document.getElementById('tour-desc');
+            const grid = document.getElementById('tour-highlights-grid');
+            const chkBox = document.getElementById('tour-checkbox-container');
+            const btnPrev = document.getElementById('btn-tour-prev');
+            const prevSpacer = document.getElementById('tour-prev-spacer');
+            const btnNext = document.getElementById('btn-tour-next');
+            const btnFinish = document.getElementById('btn-tour-finish');
+
+            if (badge) badge.textContent = `Paso ${currentTourStep + 1} de ${TUTORIAL_STEPS_DATA.length}`;
+            if (icon) icon.className = stepData.icon;
+            if (subtitle) subtitle.textContent = stepData.subtitle;
+            if (title) title.textContent = stepData.title;
+            if (desc) desc.textContent = stepData.description;
+
+            // Actualizar puntos de progreso
+            const dots = document.querySelectorAll('.tour-dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentTourStep) {
+                    dot.className = 'tour-dot h-1.5 rounded-full w-7 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)] cursor-pointer';
+                } else if (idx < currentTourStep) {
+                    dot.className = 'tour-dot h-1.5 rounded-full w-3 bg-sky-600 cursor-pointer';
+                } else {
+                    dot.className = 'tour-dot h-1.5 rounded-full w-2 bg-slate-700/80 cursor-pointer';
+                }
+            });
+
+            // Grid de tarjetas
+            if (grid) {
+                grid.innerHTML = stepData.highlights.map(h => `
+                    <div class="p-2.5 sm:p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-sky-500/30 transition flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-sky-400 text-xs font-semibold">
+                            <i class="${h.icon}"></i>
+                            <span class="text-white text-xs font-bold">${h.title}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-normal">${h.text}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Botones de anterior / siguiente / finalizar
+            if (currentTourStep > 0) {
+                if (btnPrev) btnPrev.classList.remove('hidden');
+                if (prevSpacer) prevSpacer.classList.add('hidden');
+            } else {
+                if (btnPrev) btnPrev.classList.add('hidden');
+                if (prevSpacer) prevSpacer.classList.remove('hidden');
+            }
+
+            if (currentTourStep === TUTORIAL_STEPS_DATA.length - 1) {
+                if (chkBox) chkBox.classList.remove('hidden');
+                if (btnNext) btnNext.classList.add('hidden');
+                if (btnFinish) btnFinish.classList.remove('hidden');
+            } else {
+                if (chkBox) chkBox.classList.add('hidden');
+                if (btnNext) btnNext.classList.remove('hidden');
+                if (btnFinish) btnFinish.classList.add('hidden');
+            }
+        }
+
+        function openTutorial(step = 0) {
+            const modal = document.getElementById('tutorial-modal');
+            if (!modal) return;
+            renderTutorialStep(step);
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function closeTutorial(savePreference = false) {
+            const modal = document.getElementById('tutorial-modal');
+            const chk = document.getElementById('chk-dont-show-tour');
+            if (savePreference && chk && chk.checked) {
+                try {
+                    localStorage.setItem('solar3d_skip_tutorial', 'true');
+                } catch (e) {}
+            }
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        function initTutorialEvents() {
+            const btnSkip = document.getElementById('btn-skip-tour');
+            const btnPrev = document.getElementById('btn-tour-prev');
+            const btnNext = document.getElementById('btn-tour-next');
+            const btnFinish = document.getElementById('btn-tour-finish');
+            const btnShowTour = document.getElementById('btn-show-tutorial');
+            const modal = document.getElementById('tutorial-modal');
+
+            if (btnSkip) btnSkip.addEventListener('click', () => closeTutorial(false));
+            if (btnPrev) btnPrev.addEventListener('click', () => renderTutorialStep(currentTourStep - 1));
+            if (btnNext) btnNext.addEventListener('click', () => renderTutorialStep(currentTourStep + 1));
+            if (btnFinish) btnFinish.addEventListener('click', () => closeTutorial(true));
+
+            if (btnShowTour) {
+                btnShowTour.addEventListener('click', () => {
+                    const layersMenu = document.getElementById('menu-layers');
+                    if (layersMenu) layersMenu.classList.remove('open');
+                    openTutorial(0);
+                });
+            }
+
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeTutorial(false);
+                });
+            }
+
+            const dots = document.querySelectorAll('.tour-dot');
+            dots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    const s = parseInt(e.currentTarget.getAttribute('data-step'), 10);
+                    if (!isNaN(s)) renderTutorialStep(s);
+                });
+            });
+        }
+
+        // ============================================================================
         // INICIALIZACIÓN DE LA ESCENA 3D Y EVENTOS
         // ============================================================================
         function init() {
+            initSplashScreen();
+            initTutorialEvents();
             const container = document.getElementById('canvas-container');
             const w = window.innerWidth, h = window.innerHeight;
 
@@ -2640,6 +3103,85 @@
             });
 
             // ============================================================================
+            // SOPORTE PWA INSTALABLE EN ANDROID (MANIFEST DINÁMICO & SERVICE WORKER)
+            // ============================================================================
+            let deferredInstallPrompt = null;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+                const btnInstall = document.getElementById('btn-install-pwa');
+                if (btnInstall) {
+                    btnInstall.classList.add('animate-pulse');
+                }
+            });
+
+            const btnInstallPwa = document.getElementById('btn-install-pwa');
+            if (btnInstallPwa) {
+                btnInstallPwa.addEventListener('click', async () => {
+                    if (deferredInstallPrompt) {
+                        deferredInstallPrompt.prompt();
+                        const { outcome } = await deferredInstallPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            btnInstallPwa.innerHTML = '<i class="fa-solid fa-check mr-1"></i> App Instalada';
+                        }
+                        deferredInstallPrompt = null;
+                    } else {
+                        // Fallback con instrucciones claras si el navegador requiere instalación manual
+                        alert('Para instalar en Android:\nToca el menú de tres puntos (⋮) de Chrome y selecciona "Agregar a la pantalla principal" o "Instalar aplicación".');
+                    }
+                });
+            }
+
+            // Inyectar Manifest dinámico en Blob
+            try {
+                const manifestData = {
+                    name: "NASA Eyes 3D: Simulador del Sistema Solar",
+                    short_name: "NASA 3D Eyes",
+                    description: "Simulador interactivo 3D del Sistema Solar con mecánica orbital J2000 y efemérides NASA/JPL.",
+                    start_url: "./simulador_sistema_solar_3d.html",
+                    display: "standalone",
+                    orientation: "any",
+                    background_color: "#020617",
+                    theme_color: "#020617",
+                    icons: [
+                        {
+                            src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230284c7'/><circle cx='50' cy='50' r='20' fill='%23fbbf24'/><circle cx='80' cy='30' r='6' fill='%23cbd5e1'/></svg>",
+                            sizes: "192x192 512x512",
+                            type: "image/svg+xml",
+                            purpose: "any maskable"
+                        }
+                    ]
+                };
+                const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+                const manifestUrl = URL.createObjectURL(manifestBlob);
+                const manifestLink = document.createElement('link');
+                manifestLink.rel = 'manifest';
+                manifestLink.href = manifestUrl;
+                document.head.appendChild(manifestLink);
+
+                // Service Worker en Blob
+                if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+                    const swCode = `
+                        const CACHE_NAME = 'nasa-eyes-3d-cache-v1';
+                        self.addEventListener('install', (e) => { self.skipWaiting(); });
+                        self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
+                        self.addEventListener('fetch', (e) => {
+                            e.respondWith(
+                                fetch(e.request).catch(() => caches.match(e.request))
+                            );
+                        });
+                    `;
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl).catch((err) => {
+                        console.warn('SW no disponible en contexto:', err);
+                    });
+                }
+            } catch (err) {
+                console.warn('Configuración PWA en preview:', err);
+            }
+
+            // ============================================================================
             // CONTROLADOR DEL CALENDARIO AVANZADO Y EVENTOS HISTÓRICOS DEL SIGLO XX
             // ============================================================================
             let calState = {
@@ -2986,14 +3528,17 @@
             const isLunar = distEM > 0 && Math.abs(relMz) < 1.8 && (ex*relMx + ez*relMz > 0);
 
             const cellEl = document.getElementById('hud-eclipse-cell');
+            const pillEl = document.getElementById('hud-eclipse-pill');
             const iconEl = document.getElementById('hud-eclipse-icon');
             const textEl = document.getElementById('hud-eclipse-text');
             const btnObs = document.getElementById('btn-hud-observe');
 
             if (isLunar) {
-                if (cellEl) cellEl.className = 'hidden lg:flex w-[220px] min-w-[220px] max-w-[220px] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap items-center justify-between text-xs px-2 py-0.5 rounded-lg border border-rose-500/60 bg-rose-950/40 text-rose-300';
-                if (iconEl) iconEl.className = 'fa-solid fa-moon text-rose-400 text-xs shrink-0 animate-pulse';
-                if (textEl) textEl.textContent = '🌕 Luna de Sangre (100%)';
+                if (cellEl) cellEl.className = 'flex items-center justify-center text-[10px] sm:text-xs text-rose-300 shrink-0 whitespace-nowrap';
+                if (pillEl) pillEl.className = 'flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/60 shadow-[0_0_10px_rgba(225,29,72,0.3)] animate-pulse cursor-pointer';
+                if (iconEl) iconEl.textContent = '🩸';
+                if (textEl) textEl.className = 'font-bold text-rose-300';
+                if (textEl) textEl.textContent = '95%';
                 if (btnObs) btnObs.classList.remove('hidden');
                 if (moonMaterial) {
                     moonMaterial.color.setHex(0xb91c1c);
@@ -3001,9 +3546,11 @@
                     moonMaterial.emissiveIntensity = 0.45;
                 }
             } else if (isSolar) {
-                if (cellEl) cellEl.className = 'hidden lg:flex w-[220px] min-w-[220px] max-w-[220px] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap items-center justify-between text-xs px-2 py-0.5 rounded-lg border border-amber-500/60 bg-amber-950/40 text-amber-300';
-                if (iconEl) iconEl.className = 'fa-solid fa-sun text-amber-400 text-xs shrink-0 animate-spin';
-                if (textEl) textEl.textContent = '🌑 Eclipse Solar (95%)';
+                if (cellEl) cellEl.className = 'flex items-center justify-center text-[10px] sm:text-xs text-amber-300 shrink-0 whitespace-nowrap';
+                if (pillEl) pillEl.className = 'flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/60 shadow-[0_0_10px_rgba(245,158,11,0.25)] animate-pulse cursor-pointer';
+                if (iconEl) iconEl.textContent = '🌑';
+                if (textEl) textEl.className = 'font-bold text-amber-300';
+                if (textEl) textEl.textContent = '85%';
                 if (btnObs) btnObs.classList.remove('hidden');
                 if (moonMaterial) {
                     moonMaterial.color.setHex(0x94a3b8);
@@ -3011,9 +3558,11 @@
                     moonMaterial.emissiveIntensity = 0.0;
                 }
             } else {
-                if (cellEl) cellEl.className = 'hidden lg:flex w-[220px] min-w-[220px] max-w-[220px] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap items-center justify-between text-xs px-2 py-0.5 rounded-lg border border-slate-800/80 bg-slate-900/40 text-slate-400';
-                if (iconEl) iconEl.className = 'fa-solid fa-telescope text-[10px] text-slate-500 shrink-0';
-                if (textEl) textEl.textContent = '🔭 Sin eclipse activo';
+                if (cellEl) cellEl.className = 'flex items-center justify-center text-[10px] sm:text-xs text-slate-400 shrink-0 whitespace-nowrap';
+                if (pillEl) pillEl.className = 'flex items-center gap-1 px-1 py-0.5 rounded cursor-pointer select-none';
+                if (iconEl) iconEl.textContent = '🔭';
+                if (textEl) textEl.className = 'text-[10px] sm:text-xs text-slate-500';
+                if (textEl) textEl.textContent = '—';
                 if (btnObs) btnObs.classList.add('hidden');
                 if (moonMaterial) {
                     moonMaterial.color.setHex(0x94a3b8);
@@ -3171,8 +3720,8 @@
                 updateInspectorLiveTelemetry(curDate);
             }
 
-            // Actualizar Fecha HUD (155px fija)
-            document.getElementById('hud-date').textContent = curDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+            // Actualizar Fecha HUD (Compacto Tabular)
+            document.getElementById('hud-date').textContent = curDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: '2-digit' }).replace('.', '');
             document.getElementById('hud-time').textContent = curDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('lbl-sim-days').textContent = `Día ${(d % 365.25).toFixed(1)}`;
             const timeline = document.getElementById('timeline-slider');
@@ -3191,18 +3740,26 @@
                     : 'w-[58px] min-w-[58px] max-w-[58px] shrink-0 text-center text-[10px] py-0.5 rounded font-medium truncate border border-indigo-500/40 bg-indigo-500/20 text-indigo-300 font-mono-num';
             }
 
-            // Actualizar Fase Lunar (205px fija)
+            // Actualizar Fase Lunar (Solo Icono + %)
             const synodicFrac = ((d % ASTRO.MOON_SYNODIC_DAYS) + ASTRO.MOON_SYNODIC_DAYS) % ASTRO.MOON_SYNODIC_DAYS / ASTRO.MOON_SYNODIC_DAYS;
             const illumPct = Math.round((1 - Math.cos(synodicFrac * Math.PI * 2)) / 2 * 100);
+            let phaseIcon = '🌑';
             let phaseName = 'Luna Nueva';
-            if (synodicFrac < 0.03 || synodicFrac > 0.97) phaseName = '🌑 Luna Nueva';
-            else if (synodicFrac < 0.22) phaseName = '🌒 Creciente Cóncava';
-            else if (synodicFrac < 0.28) phaseName = '🌓 Cuarto Creciente';
-            else if (synodicFrac < 0.47) phaseName = '🌔 Gibosa Creciente';
-            else if (synodicFrac < 0.53) phaseName = '🌕 Luna Llena';
-            else if (synodicFrac < 0.72) phaseName = '🌖 Gibosa Menguante';
-            else if (synodicFrac < 0.78) phaseName = '🌗 Cuarto Menguante';
-            else phaseName = '🌘 Menguante Cóncava';
+            if (synodicFrac < 0.03 || synodicFrac > 0.97) { phaseIcon = '🌑'; phaseName = 'Luna Nueva'; }
+            else if (synodicFrac < 0.22) { phaseIcon = '🌒'; phaseName = 'Creciente Cóncava'; }
+            else if (synodicFrac < 0.28) { phaseIcon = '🌓'; phaseName = 'Cuarto Creciente'; }
+            else if (synodicFrac < 0.47) { phaseIcon = '🌔'; phaseName = 'Gibosa Creciente'; }
+            else if (synodicFrac < 0.53) { phaseIcon = '🌕'; phaseName = 'Luna Llena'; }
+            else if (synodicFrac < 0.72) { phaseIcon = '🌖'; phaseName = 'Gibosa Menguante'; }
+            else if (synodicFrac < 0.78) { phaseIcon = '🌗'; phaseName = 'Cuarto Menguante'; }
+            else { phaseIcon = '🌘'; phaseName = 'Menguante Cóncava'; }
+
+            const moonIconEl = document.getElementById('hud-moon-icon');
+            if (moonIconEl) moonIconEl.textContent = phaseIcon;
+            const moonIllumEl = document.getElementById('hud-moon-illum');
+            if (moonIllumEl) moonIllumEl.textContent = `${illumPct}%`;
+            const moonPillEl = document.getElementById('hud-moon-pill');
+            if (moonPillEl) moonPillEl.title = `Fase Lunar: ${phaseIcon} ${phaseName} (${illumPct}%)`;
 
             // Control dinámico de Realce Lumínico Planetario
             if (ambientLight) ambientLight.intensity = state.isLightMode ? 1.35 : (state.planetaryBoost ? 0.32 : 0.04);

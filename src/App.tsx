@@ -2733,7 +2733,7 @@ export default function App() {
           </button>
 
           {openDropdown === 'menu-time' && (
-            <div className="dropdown-panel open max-md:fixed max-md:bottom-[68px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-h-[55vh] max-md:overflow-y-auto max-md:rounded-2xl max-md:p-3 max-md:z-50 md:absolute md:bottom-full md:mb-3 md:left-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-84 sm:md:w-96 space-panel md:rounded-2xl md:p-3 z-50 shadow-2xl">
+            <div id="menu-time" className="dropdown-panel dropdown-menu menu-panel panel-desplegable open max-md:fixed max-md:bottom-[70px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-w-[380px] max-md:max-h-[calc(100dvh-140px)] max-md:overflow-y-auto max-md:rounded-[16px] max-md:p-[12px_14px] max-md:z-[150] md:absolute md:bottom-full md:mb-3 md:left-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-84 sm:md:w-96 space-panel md:rounded-2xl md:p-3 z-50 shadow-2xl">
               <div className="flex items-center justify-between border-b border-slate-700/70 pb-2 mb-2.5">
                 <span className="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
                   <i className="fa-solid fa-hourglass-half"></i> Tiempo y Calendario
@@ -3008,7 +3008,7 @@ export default function App() {
           </button>
 
           {openDropdown === 'menu-cameras' && (
-            <div className="dropdown-panel open max-md:fixed max-md:bottom-[68px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-h-[55vh] max-md:overflow-y-auto max-md:rounded-2xl max-md:p-3 max-md:z-50 md:absolute md:bottom-full md:mb-3 md:left-1/2 md:-translate-x-1/2 md:w-84 space-panel md:rounded-2xl md:p-3 z-50 shadow-2xl">
+            <div id="menu-cameras" className="dropdown-panel dropdown-menu menu-panel panel-desplegable open max-md:fixed max-md:bottom-[70px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-w-[380px] max-md:max-h-[calc(100dvh-140px)] max-md:overflow-y-auto max-md:rounded-[16px] max-md:p-[12px_14px] max-md:z-[150] md:absolute md:bottom-full md:mb-3 md:left-1/2 md:-translate-x-1/2 md:w-84 space-panel md:rounded-2xl md:p-3 z-50 shadow-2xl">
               <div className="text-xs font-bold uppercase tracking-wider text-amber-400 border-b border-slate-700/70 pb-2 mb-2">
                 Cámaras Espaciales (Target Lock)
               </div>
@@ -3154,7 +3154,7 @@ export default function App() {
           </button>
 
           {openDropdown === 'menu-layers' && (
-            <div className="dropdown-panel open max-md:fixed max-md:bottom-[68px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-h-[55vh] max-md:overflow-y-auto max-md:rounded-2xl max-md:p-3 max-md:z-50 md:absolute md:bottom-full md:mb-3 md:right-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-68 space-panel md:rounded-2xl md:p-3 z-50 text-xs shadow-2xl">
+            <div id="menu-layers" className="dropdown-panel dropdown-menu menu-panel panel-desplegable open max-md:fixed max-md:bottom-[70px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-w-[380px] max-md:max-h-[calc(100dvh-140px)] max-md:overflow-y-auto max-md:rounded-[16px] max-md:p-[12px_14px] max-md:z-[150] md:absolute md:bottom-full md:mb-3 md:right-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-68 space-panel md:rounded-2xl md:p-3 z-50 text-xs shadow-2xl">
               <div className="text-xs font-bold uppercase tracking-wider text-indigo-300 border-b border-slate-700/70 pb-2 mb-2 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <i className="fa-solid fa-sliders"></i> Elementos Visuales 3D

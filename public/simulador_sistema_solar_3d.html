@@ -122,7 +122,28 @@
             .top-hud-pill2 button { width: 32px !important; height: 32px !important; min-width: 32px !important; display: flex !important; }
             #dropdown-triggers { bottom: 12px !important; max-width: 96vw !important; gap: 4px !important; padding: 4px 6px !important; }
             #dropdown-triggers button { padding: 6px 10px !important; font-size: 11px !important; }
-            .dropdown-panel.open { width: 92vw !important; max-width: 92vw !important; max-height: 52dvh !important; bottom: 60px !important; left: 50% !important; transform: translateX(-50%) !important; padding: 12px !important; overflow-y: auto !important; }
+            .dropdown-menu,
+            .menu-panel,
+            .panel-desplegable,
+            .dropdown-panel,
+            .dropdown-panel.open,
+            #menu-time,
+            #menu-cameras,
+            #menu-layers {
+                position: fixed !important;
+                bottom: 70px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 92vw !important;
+                max-width: 380px !important;
+                max-height: calc(100dvh - 140px) !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+                padding: 12px 14px !important;
+                border-radius: 16px !important;
+                box-sizing: border-box !important;
+                z-index: 150 !important;
+            }
         }
     </style>
 </head>
@@ -249,7 +270,7 @@
             <button data-dropdown="menu-time" class="dropdown-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Efemérides y Tiempo">
                 <i class="fa-solid fa-clock text-sky-400"></i><span class="hidden min-[380px]:inline">Tiempo</span>
             </button>
-            <div id="menu-time" class="dropdown-panel absolute bottom-full mb-3 left-0 sm:left-1/2 sm:-translate-x-1/2 w-84 sm:w-96 space-panel rounded-2xl p-4 z-50 max-h-[72vh] overflow-y-auto">
+            <div id="menu-time" class="dropdown-panel dropdown-menu menu-panel panel-desplegable absolute bottom-full mb-3 left-0 sm:left-1/2 sm:-translate-x-1/2 w-84 sm:w-96 space-panel rounded-2xl p-4 z-50 max-h-[72vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-slate-700/70 pb-2 mb-3">
                     <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
                         <i class="fa-solid fa-hourglass-half"></i> Efemérides y Tiempo
@@ -366,7 +387,7 @@
             <button data-dropdown="menu-cameras" class="dropdown-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Cámaras de seguimiento">
                 <i class="fa-solid fa-video text-amber-400"></i><span class="hidden min-[380px]:inline">Cámaras</span>
             </button>
-            <div id="menu-cameras" class="dropdown-panel absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-84 space-panel rounded-2xl p-4 z-50 max-h-[72vh] overflow-y-auto">
+            <div id="menu-cameras" class="dropdown-panel dropdown-menu menu-panel panel-desplegable absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-84 space-panel rounded-2xl p-4 z-50 max-h-[72vh] overflow-y-auto">
                 <div class="text-xs font-bold uppercase tracking-wider text-amber-400 border-b border-slate-700/70 pb-2 mb-2.5">
                     Cámaras con Auto-Enfoque y Target Lock
                 </div>
@@ -426,7 +447,7 @@
             <button data-dropdown="menu-layers" class="dropdown-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium space-panel border border-slate-800 text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shrink-0" title="Capas visuales 3D">
                 <i class="fa-solid fa-layer-group text-indigo-400"></i><span class="hidden min-[380px]:inline">Capas</span>
             </button>
-            <div id="menu-layers" class="dropdown-panel max-md:fixed max-md:bottom-[68px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-h-[55vh] max-md:overflow-y-auto max-md:rounded-2xl max-md:p-3 max-md:z-50 md:absolute md:bottom-full md:mb-3 md:right-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-72 space-panel md:rounded-2xl md:p-3 z-50 text-xs">
+            <div id="menu-layers" class="dropdown-panel dropdown-menu menu-panel panel-desplegable max-md:fixed max-md:bottom-[70px] max-md:left-1/2 max-md:-translate-x-1/2 max-md:w-[92vw] max-md:max-w-[380px] max-md:max-h-[calc(100dvh-140px)] max-md:overflow-y-auto max-md:rounded-[16px] max-md:p-[12px_14px] max-md:z-[150] md:absolute md:bottom-full md:mb-3 md:right-0 sm:md:left-1/2 sm:md:-translate-x-1/2 md:w-72 space-panel md:rounded-2xl md:p-3 z-50 text-xs">
                 <div class="text-xs font-bold uppercase tracking-wider text-indigo-300 border-b border-slate-700/70 pb-2 mb-2 flex items-center justify-between">
                     <span>Elementos Visuales 3D</span>
                 </div>
